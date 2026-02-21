@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Product;
+use App\Models\Category;
 use App\Models\Size;
 use App\Models\Sale;
 use App\Models\SaleItem;
@@ -15,10 +16,16 @@ class POSController extends Controller
      */
     public function index()
     {
+        // Fetch products with relationships
         $products = Product::with('sizes', 'category')->get();
+
+        // Fetch all categories for filter buttons
+        $categories = Category::all();
+
+        // Optional: load cart from session
         $cart = session()->get('cart', []);
 
-        return view('pos.index', compact('products', 'cart'));
+        return view('pos.index', compact('products', 'categories', 'cart'));
     }
 
     public function addToCart(Request $request)
@@ -72,45 +79,56 @@ class POSController extends Controller
 
         return back();
     }
-
-    public function checkout()
+    public function updateSessionCart(Request $request)
     {
-        $cart = session()->get('cart', []);
+        session()->put('cart', $request->cart ?? []);
+        return response()->json(['message' => 'Cart saved']);
+    }
+    public function checkout(Request $request)
+    {
 
+        $cart = $request->items ?? [];
         if (empty($cart)) {
-            return back()->with('error', 'Cart is empty');
+            return response()->json(['message' => 'Cart is empty'], 400);
         }
 
         DB::transaction(function () use ($cart) {
 
+            // Compute total safely
             $total = collect($cart)->sum(function ($item) {
-                return $item['price'] * $item['quantity'];
+                // Use qty if exists, else fallback to quantity
+                $qty = $item['qty'] ?? $item['quantity'] ?? 1;
+                $price = $item['base_price'] ?? $item['price'] ?? 0;
+                return $price * $qty;
             });
 
             $sale = Sale::create([
                 'user_id' => auth()->id(),
-                'total_amount' => $total
+                'total_amount' => $total,
             ]);
 
             foreach ($cart as $item) {
-
+                $qty = $item['qty'] ?? $item['quantity'] ?? 1;
+                $price = $item['base_price'] ?? $item['price'] ?? 0;
+                \Log::error($item);
                 SaleItem::create([
                     'sale_id' => $sale->id,
-                    'product_id' => $item['product_id'],
-                    'size_id' => $item['size_id'],
-                    'quantity' => $item['quantity'],
-                    'price' => $item['price']
+                    'product_id' => $item['id'],
+                    'size_id' => $item['sizes'][0]['id'] ?? null,
+                    'quantity' => $qty,
+                    'price' => $price,
                 ]);
 
-                $product = Product::find($item['product_id']);
-                $product->decrement('stock', $item['quantity']);
+                $product = Product::find($item['id']);
+                if ($product)
+                    $product->decrement('stock', $qty);
             }
-
         });
 
+        // Clear cart
         session()->forget('cart');
 
-        return redirect()->route('pos.index')
-            ->with('success', 'Sale completed');
+        return response()->json(['message' => 'Sale completed successfully']);
     }
 }
+

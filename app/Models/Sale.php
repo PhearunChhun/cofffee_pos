@@ -8,7 +8,7 @@ class Sale extends Model
 {
    use HasFactory;
 
-    protected $fillable = ['user_id', 'total'];
+    protected $fillable = ['user_id', 'total_amount'];
 
     public function items()
     {

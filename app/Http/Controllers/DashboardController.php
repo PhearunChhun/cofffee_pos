@@ -17,10 +17,8 @@ class DashboardController extends Controller
         return view('dashboard', [
             'totalUsers' => User::count(),
             'totalCategories' => Category::count(),
-            // 'totalProducts' => Product::count(),
-            'totalProducts' => 0,
-            'totalSales' => 0,
-            // 'totalSales' => Sale::sum('total_amount') ?? 0,
+            'totalProducts' => Product::count(),
+            'totalSales' => Sale::sum('total_amount') ?? 0,
         ]);
     }
 

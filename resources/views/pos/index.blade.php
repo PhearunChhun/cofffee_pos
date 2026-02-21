@@ -22,7 +22,7 @@
                 @foreach ($products as $product)
                     <div class="product-card bg-gray-50 p-3 rounded shadow cursor-pointer"
                         data-category="{{ $product->category_id }}" data-product='@json($product)'>
-                        <img src="{{ $product->image ? asset('storage/' . $product->image) : 'https://via.placeholder.com/150' }}"
+                        <img src="{{ $product->image ? asset('storage/' . $product->image) : '' }}"
                             class="w-full h-32 object-cover rounded mb-2">
                         <h3 class="font-bold text-gray-800">{{ $product->name }}</h3>
                         <p class="text-gray-600">${{ number_format($product->base_price, 2) }}</p>
@@ -149,10 +149,11 @@
             }
 
             // Checkout submit
-            document.getElementById('checkout-form').addEventListener('submit', e => {
+            document.getElementById('checkout-form').addEventListener('submit', async e => {
                 e.preventDefault();
                 if (cart.length === 0) return alert('Cart is empty');
 
+                // Checkout POST request
                 fetch("{{ route('pos.checkout') }}", {
                         method: 'POST',
                         headers: {
@@ -161,17 +162,16 @@
                         },
                         body: JSON.stringify({
                             items: cart
-                        })
+                        }) // <-- important!
                     })
                     .then(res => res.json())
                     .then(data => {
-                        alert('Sale completed!');
+                        alert(data.message);
                         cart = [];
                         renderCart();
                     })
                     .catch(err => console.error(err));
             });
-
             // Category filter
             document.querySelectorAll('.category-btn').forEach(btn => {
                 btn.addEventListener('click', () => {

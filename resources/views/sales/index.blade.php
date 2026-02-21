@@ -33,7 +33,7 @@
                                     </span>
                                 @endforeach
                             </td>
-                            <td class="px-4 py-2">${{ number_format($sale->total, 2) }}</td>
+                            <td class="px-4 py-2">${{ number_format($sale->total_amount, 2) }}</td>
                             <td class="px-4 py-2">{{ $sale->created_at->format('d M Y H:i') }}</td>
                             <td class="px-4 py-2 flex gap-2">
                                 <a href="{{ route('sales.show', $sale) }}"

@@ -43,12 +43,9 @@ Route::resource('sizes', SizeController::class)
 Route::resource('sales', SaleController::class)
     ->middleware(['auth']);
 
-Route::get('reports', [ReportController::class,'index'])->name('reports.index')->middleware('auth');
+Route::get('reports', [ReportController::class, 'index'])->name('reports.index')->middleware('auth');
 Route::middleware(['auth'])->group(function () {
     Route::get('/pos', [POSController::class, 'index'])->name('pos.index');
-    Route::post('/pos/add', [POSController::class, 'addToCart'])->name('pos.add');
-    Route::post('/pos/update', [POSController::class, 'updateCart'])->name('pos.update');
-    Route::post('/pos/remove', [POSController::class, 'removeFromCart'])->name('pos.remove');
     Route::post('/pos/checkout', [POSController::class, 'checkout'])->name('pos.checkout');
 });
 require __DIR__ . '/auth.php';
