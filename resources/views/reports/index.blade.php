@@ -28,11 +28,11 @@
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-blue-400 text-white">
                     <tr>
-                        <th class="px-4 py-2">#</th>
-                        <th class="px-4 py-2">Cashier</th>
-                        <th class="px-4 py-2">Items</th>
-                        <th class="px-4 py-2">Total</th>
-                        <th class="px-4 py-2">Date</th>
+                        <th class="px-4 py-2 text-start">#</th>
+                        <th class="px-4 py-2 text-start">Cashier</th>
+                        <th class="px-4 py-2 text-start">Items</th>
+                        <th class="px-4 py-2 text-start">Total</th>
+                        <th class="px-4 py-2 text-start">Date</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
@@ -48,7 +48,7 @@
                                     </span>
                                 @endforeach
                             </td>
-                            <td class="px-4 py-2">${{ number_format($sale->total, 2) }}</td>
+                            <td class="px-4 py-2">${{ number_format($sale->total_amount, 2) }}</td>
                             <td class="px-4 py-2">{{ $sale->created_at->format('d M Y H:i') }}</td>
                         </tr>
                     @empty

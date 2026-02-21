@@ -25,6 +25,19 @@
                         <img src="{{ $product->image ? asset('storage/' . $product->image) : '' }}"
                             class="w-full h-32 object-cover rounded mb-2">
                         <h3 class="font-bold text-gray-800">{{ $product->name }}</h3>
+
+                        {{-- Size Selector --}}
+                        @if (count($product->sizes) > 0)
+                            <select class="size-select w-full mt-2 p-1 border rounded">
+                                @foreach ($product->sizes as $size)
+                                    <option value="{{ $size->id }}"
+                                        data-price="{{ $product->base_price + $size->price_adjustment }}">
+                                        {{ $size->name }} (+${{ number_format($size->price_adjustment, 2) }})
+                                    </option>
+                                @endforeach
+                            </select>
+                        @endif
+
                         <p class="text-gray-600">${{ number_format($product->base_price, 2) }}</p>
                     </div>
                 @endforeach
@@ -76,12 +89,26 @@
             products.forEach(p => {
                 p.addEventListener('click', () => {
                     const product = JSON.parse(p.dataset.product);
-                    const existing = cart.find(item => item.id === product.id);
+
+                    // Get selected size
+                    let sizeId = null;
+                    let price = parseFloat(product.base_price);
+                    const select = p.querySelector('.size-select');
+                    if (select) {
+                        sizeId = select.value;
+                        price = parseFloat(select.selectedOptions[0].dataset.price);
+                    }
+
+                    const existing = cart.find(item => item.id === product.id && item.size_id ===
+                        sizeId);
                     if (existing) existing.qty++;
                     else cart.push({
                         ...product,
-                        qty: 1
+                        qty: 1,
+                        size_id: sizeId,
+                        price: price
                     });
+
                     renderCart();
                 });
             });
@@ -103,20 +130,21 @@
                     const row = document.createElement('div');
                     row.classList.add('flex', 'justify-between', 'mb-2', 'items-center');
 
-                    row.innerHTML = `
-                <div>
-                    <p class="font-bold">${item.name}</p>
-                    <p class="text-gray-500 text-sm">$${item.base_price} x ${item.qty}</p>
-                </div>
-                <div class="flex items-center gap-2">
-                    <button data-index="${index}" class="decrease px-2 bg-gray-200 rounded">-</button>
-                    <button data-index="${index}" class="increase px-2 bg-gray-200 rounded">+</button>
-                    <button data-index="${index}" class="remove px-2 text-red-600">x</button>
-                </div>
-            `;
+                    const sizeName = item.size_id ? item.sizes?.find(s => s.id == item.size_id)?.name : '';
+                        row.innerHTML = `
+                        <div>
+                            <p class="font-bold">${item.name} ${sizeName ? '(' + sizeName + ')' : ''}</p>
+                            <p class="text-gray-500 text-sm">$${item.price.toFixed(2)} x ${item.qty}</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button data-index="${index}" class="decrease px-2 bg-gray-200 rounded">-</button>
+                            <button data-index="${index}" class="increase px-2 bg-gray-200 rounded">+</button>
+                            <button data-index="${index}" class="remove px-2 text-red-600">x</button>
+                        </div>
+                    `;
                     cartItemsEl.appendChild(row);
 
-                    subtotal += item.base_price * item.qty;
+                    subtotal += item.price * item.qty;
                 });
 
                 subtotalEl.textContent = '$' + subtotal.toFixed(2);

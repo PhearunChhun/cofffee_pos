@@ -24,7 +24,7 @@ class ReportController extends Controller
             ->get();
 
         // Total sales
-        $totalSales = $sales->sum('total');
+        $totalSales = $sales->sum('total_amount');
 
         return view('reports.index', compact('sales', 'totalSales', 'start', 'end'));
     }
