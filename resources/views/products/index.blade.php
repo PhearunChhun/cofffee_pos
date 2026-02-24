@@ -19,17 +19,34 @@
                     <thead class="bg-blue-400 text-white">
                         <tr>
                             <th class="px-4 py-2 text-left ">#</th>
+                            <th class="px-4 py-2 text-left ">Image</th>
                             <th class="px-4 py-2 text-left ">Name</th>
-                            <th class="px-4 py-2 text-left ">Description</th>
-                            <th class="px-4 py-2 text-right ">Actions</th>
+                            <th class="px-4 py-2 text-left ">Category</th>
+                            <th class="px-4 py-2 text-left ">Base Price</th>
+                            <th class="px-4 py-2 text-left ">Size prices</th>
+                            <th class="px-4 py-2 text-left ">Actions</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-200">
                         @foreach ($products as $product)
                             <tr>
                                 <td class="px-6 py-4">{{ $loop->iteration }}</td>
+                                <td class="px-6 py-4">
+                                    @if ($product->image)
+                                        <img src="{{ asset('storage/' . $product->image) }}" width="70px" height="70px"
+                                            class="w-[50px] h-[50px] object-cover rounded">
+                                    @endif
+                                </td>
                                 <td class="px-6 py-4">{{ $product->name }}</td>
-                                <td class="px-6 py-4">{{ $product->description }}</td>
+                                <td class="px-6 py-4">{{ $product->category->name }}</td>
+                                <td class="px-6 py-4">{{ $product->base_price }}</td>
+                                <td class="px-6 py-4">
+                                    @foreach ($product->sizes as $size)
+                                        <span class="text-xs bg-gray-200 px-2 py-1 rounded">
+                                            {{ $size->name }} (${{ $size->pivot->price }})
+                                        </span>
+                                    @endforeach
+                                </td>
                                 <td class="px-6 py-4 text-right space-x-2">
                                     <a href="{{ route('products.edit', $product) }}"
                                         class="text-blue-600 hover:underline">Edit</a>

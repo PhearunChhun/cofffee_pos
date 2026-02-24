@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'SmartPOS') }}</title>
+    <title>{{ config('app.name', 'Coffee POS') }}</title>
 
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
@@ -25,7 +25,7 @@
             {{-- Logo + Toggle --}}
             <div class="flex items-center justify-between p-4 border-b">
                 <span id="logo" class="text-xl font-bold">
-                    SmartPOS
+                    Coffee POS 
                 </span>
 
                 <button onclick="toggleSidebar()" class="text-gray-500 hover:text-black">

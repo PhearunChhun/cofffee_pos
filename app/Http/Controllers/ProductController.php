@@ -7,9 +7,10 @@ use App\Models\Category;
 use App\Models\Size;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-
+use App\Traits\ImageUpload;
 class ProductController extends Controller
 {
+    use ImageUpload;
     /**
      * Display a listing of the resource.
      */
@@ -48,7 +49,7 @@ class ProductController extends Controller
         $data = $request->only(['name', 'category_id', 'base_price', 'description']);
 
         if ($request->hasFile('image')) {
-            $data['image'] = $request->file('image')->store('products', 'public');
+            $data['image'] = $this->uploadImage($request->file('image'), 'products');
         }
 
         $product = Product::create($data);
@@ -56,12 +57,16 @@ class ProductController extends Controller
         if ($request->sizes) {
             $syncData = [];
             foreach ($request->sizes as $sizeId) {
-                $syncData[$sizeId] = ['price' => $request->size_prices[$sizeId] ?? 0];
+                $syncData[$sizeId] = [
+                    'price' => $request->size_prices[$sizeId] ?? 0
+                ];
             }
             $product->sizes()->sync($syncData);
         }
 
-        return redirect()->route('products.index')->with('success', 'Product created successfully.');
+        return redirect()
+            ->route('products.index')
+            ->with('success', 'Product created successfully.');
     }
 
     /**
@@ -102,9 +107,12 @@ class ProductController extends Controller
         $data = $request->only(['name', 'category_id', 'base_price', 'description']);
 
         if ($request->hasFile('image')) {
-            if ($product->image)
-                Storage::disk('public')->delete($product->image);
-            $data['image'] = $request->file('image')->store('products', 'public');
+
+            // Delete old image safely (using trait)
+            $this->deleteImage($product->image);
+
+            // Upload new image
+            $data['image'] = $this->uploadImage($request->file('image'), 'products');
         }
 
         $product->update($data);
@@ -112,24 +120,30 @@ class ProductController extends Controller
         if ($request->sizes) {
             $syncData = [];
             foreach ($request->sizes as $sizeId) {
-                $syncData[$sizeId] = ['price' => $request->size_prices[$sizeId] ?? 0];
+                $syncData[$sizeId] = [
+                    'price' => $request->size_prices[$sizeId] ?? 0
+                ];
             }
             $product->sizes()->sync($syncData);
         } else {
             $product->sizes()->detach();
         }
 
-        return redirect()->route('products.index')->with('success', 'Product updated successfully.');
+        return redirect()
+            ->route('products.index')
+            ->with('success', 'Product updated successfully.');
     }
-
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(Product $product)
     {
-        if ($product->image)
-            Storage::disk('public')->delete($product->image);
+        $this->deleteImage($product->image);
+
         $product->delete();
-        return redirect()->route('products.index')->with('success', 'Product deleted successfully.');
+
+        return redirect()
+            ->route('products.index')
+            ->with('success', 'Product deleted successfully.');
     }
 }

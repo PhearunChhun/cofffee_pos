@@ -40,20 +40,13 @@ class SizeController extends Controller
             ->with('success','Size created');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Size $size)
-    {
-        //
-    }
 
     /**
      * Show the form for editing the specified resource.
      */
     public function edit(Size $size)
     {
-        return view('sizes.edit', compact('size'));
+        return view('sizes.form', compact('size'));
     }
 
     /**

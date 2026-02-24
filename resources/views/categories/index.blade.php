@@ -29,7 +29,7 @@
                             <tr>
                                 <td class="px-6 py-4">{{ $loop->iteration }}</td>
                                 <td class="px-6 py-4">{{ $category->name }}</td>
-                                <td class="px-6 py-4">{{ $category->description }}</td>
+                                <td class="px-6 py-4">{{ $category->description ?? "-" }}</td>
                                 <td class="px-6 py-4 text-right space-x-2">
                                     <a href="{{ route('categories.edit', $category) }}"
                                         class="text-blue-600 hover:underline">Edit</a>

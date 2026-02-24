@@ -45,15 +45,12 @@
             </div>
 
             <div>
-                <label class="block text-gray-700">Sizes & Prices</label>
+                <label class="block text-gray-700">Sizes</label>
                 @foreach ($sizes as $size)
                     <div class="flex items-center space-x-2 mt-1">
                         <input type="checkbox" name="sizes[]" value="{{ $size->id }}"
                             {{ isset($product) && $product->sizes->contains($size->id) ? 'checked' : '' }}>
                         <span class="w-32">{{ $size->name }}</span>
-                        <input type="number" step="0.01" name="size_prices[{{ $size->id }}]"
-                            value="{{ isset($product) && $product->sizes->contains($size->id) ? $product->sizes->find($size->id)->pivot->price : 0 }}"
-                            class="border-gray-300 rounded shadow-sm w-20">
                     </div>
                 @endforeach
             </div>
@@ -65,18 +62,40 @@
 
             <div>
                 <label class="block text-gray-700">Image</label>
-                <input type="file" name="image" class="mt-1 block w-full">
-                @if (isset($product) && $product->image)
-                    <img src="{{ asset('storage/' . $product->image) }}" class="mt-2 w-32 h-32 object-cover rounded">
-                @endif
+
+                <input type="file" name="image" id="imageInput" accept="image/*" class="mt-1 block w-full">
+
+                {{-- Preview Container --}}
+                <div class="mt-2">
+                    <img id="imagePreview"
+                        src="{{ isset($product) && $product->image ? asset('storage/' . $product->image) : '' }}"
+                        class="w-32 h-32 object-cover rounded {{ isset($product) && $product->image ? '' : 'hidden' }}">
+                </div>
             </div>
 
             <div class="flex justify-end">
                 <a href="{{ route('products.index') }}"
-                    class="mr-2 px-4 py-2 rounded bg-gray-300 hover:bg-gray-400">Cancel</a>
+                    class="mr-2 px-4 py-2 rounded text-red-500 hover:underline">Cancel</a>
                 <button type="submit"
-                    class="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded">Save</button>
+                    class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded">Save</button>
             </div>
         </form>
     </div>
+    <script>
+        document.getElementById('imageInput').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            const preview = document.getElementById('imagePreview');
+
+            if (file) {
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.classList.remove('hidden');
+                }
+
+                reader.readAsDataURL(file);
+            }
+        });
+    </script>
 </x-app-layout>

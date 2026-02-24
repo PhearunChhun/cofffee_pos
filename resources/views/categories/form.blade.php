@@ -30,7 +30,7 @@
 
             <div class="flex justify-end">
                 <a href="{{ route('categories.index') }}"
-                    class="mr-2 px-4 py-2 rounded bg-gray-300 hover:bg-gray-400">Cancel</a>
+                    class="mr-2 px-4 py-2 rounded text-red-500 hover:underline">Cancel</a>
                 <button type="submit"
                     class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded">Save</button>
             </div>

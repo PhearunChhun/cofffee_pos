@@ -30,9 +30,9 @@
                                 <td class="px-6 py-4">{{ $size->name }}</td>
                                 <td class="px-6 py-4">{{ $size->price_adjustment ."$"}}</td>
                                 <td class="px-6 py-4 text-right space-x-2">
-                                    <a href="{{ route('categories.edit', $size) }}"
+                                    <a href="{{ route('sizes.edit', $size) }}"
                                         class="text-blue-600 hover:underline">Edit</a>
-                                    <form action="{{ route('categories.destroy', $size) }}" method="POST"
+                                    <form action="{{ route('sizes.destroy', $size) }}" method="POST"
                                         class="inline-block" onsubmit="return confirm('Are you sure?');">
                                         @csrf
                                         @method('DELETE')

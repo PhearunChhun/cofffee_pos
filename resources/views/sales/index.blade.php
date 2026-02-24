@@ -17,7 +17,7 @@
                         <th class="px-4 py-2 text-left">Items</th>
                         <th class="px-4 py-2 text-left">Total</th>
                         <th class="px-4 py-2 text-left">Date</th>
-                        <th class="px-4 py-2">Actions</th>
+                        <th class="px-4 py-2 text-left">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
@@ -37,13 +37,13 @@
                             <td class="px-4 py-2">{{ $sale->created_at->format('d M Y H:i') }}</td>
                             <td class="px-4 py-2 flex gap-2">
                                 <a href="{{ route('sales.show', $sale) }}"
-                                    class="bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-1 rounded">View</a>
+                                    class="text-yellow-500 hidden px-3 py-1 rounded">View</a>
                                 <form action="{{ route('sales.destroy', $sale) }}" method="POST"
                                     onsubmit="return confirm('Delete this sale?')">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit"
-                                        class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded">Delete</button>
+                                        class=" text-red-500 px-3 py-1 rounded">Delete</button>
                                 </form>
                             </td>
                         </tr>
