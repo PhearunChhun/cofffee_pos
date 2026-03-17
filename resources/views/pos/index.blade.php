@@ -1,16 +1,16 @@
 <x-app-layout>
     <x-slot name="header">Point of Sale</x-slot>
 
-    <div class="flex flex-col md:flex-row h-[calc(100vh-4rem)] gap-4 p-4">
+    <div class="flex flex-col md:flex-row gap-4 p-4">
 
         {{-- Left: Product List --}}
-        <div class="md:w-2/3 bg-white rounded-lg shadow p-4 overflow-y-auto">
+        <div class="md:w-2/3 h-[calc(100vh-4rem)] bg-white rounded-lg shadow p-4 overflow-y-auto">
             <h2 class="text-xl font-bold mb-4">Products</h2>
 
             {{-- Category Filter --}}
             <div class="flex gap-2 mb-4">
                 <button data-category="all"
-                    class="category-btn bg-yellow-600 text-white px-3 py-1 rounded hover:bg-yellow-700">All</button>
+                    class="category-btn bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-700">All</button>
                 @foreach ($categories as $category)
                     <button data-category="{{ $category->id }}"
                         class="category-btn bg-gray-200 px-3 py-1 rounded hover:bg-gray-300">{{ $category->name }}</button>
@@ -45,7 +45,7 @@
         </div>
 
         {{-- Right: Cart Panel --}}
-        <div class="md:w-1/3 bg-white rounded-lg shadow p-4 flex flex-col">
+        <div class="md:w-1/3 h-full bg-white rounded-lg shadow p-4 flex flex-col">
             <h2 class="text-xl font-bold mb-4">Cart</h2>
 
             <div class="flex-1 overflow-y-auto mb-4" id="cart-items">
@@ -72,7 +72,7 @@
             <form id="checkout-form" class="mt-4">
                 @csrf
                 <button type="submit"
-                    class="w-full bg-yellow-600 hover:bg-yellow-700 text-white py-2 rounded text-lg">Checkout</button>
+                    class="w-full bg-blue-500 hover:bg-blue-700 text-white py-2 rounded text-lg">Checkout</button>
             </form>
         </div>
     </div>
@@ -85,29 +85,44 @@
             const totalEl = document.getElementById('total');
             let cart = [];
 
+
+            document.querySelectorAll('.size-select').forEach(select => {
+                select.addEventListener('click', e => {
+                    e.stopPropagation();
+                });
+
+                select.addEventListener('change', e => {
+                    e.stopPropagation();
+                });
+            });
             // Add to cart
             products.forEach(p => {
                 p.addEventListener('click', () => {
                     const product = JSON.parse(p.dataset.product);
 
-                    // Get selected size
                     let sizeId = null;
                     let price = parseFloat(product.base_price);
                     const select = p.querySelector('.size-select');
+
                     if (select) {
                         sizeId = select.value;
                         price = parseFloat(select.selectedOptions[0].dataset.price);
                     }
 
-                    const existing = cart.find(item => item.id === product.id && item.size_id ===
-                        sizeId);
-                    if (existing) existing.qty++;
-                    else cart.push({
-                        ...product,
-                        qty: 1,
-                        size_id: sizeId,
-                        price: price
-                    });
+                    const existing = cart.find(item =>
+                        item.id === product.id && item.size_id === sizeId
+                    );
+
+                    if (existing) {
+                        existing.qty++;
+                    } else {
+                        cart.push({
+                            ...product,
+                            qty: 1,
+                            size_id: sizeId,
+                            price: price
+                        });
+                    }
 
                     renderCart();
                 });
@@ -131,7 +146,7 @@
                     row.classList.add('flex', 'justify-between', 'mb-2', 'items-center');
 
                     const sizeName = item.size_id ? item.sizes?.find(s => s.id == item.size_id)?.name : '';
-                        row.innerHTML = `
+                    row.innerHTML = `
                         <div>
                             <p class="font-bold">${item.name} ${sizeName ? '(' + sizeName + ')' : ''}</p>
                             <p class="text-gray-500 text-sm">$${item.price.toFixed(2)} x ${item.qty}</p>
