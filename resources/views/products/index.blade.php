@@ -40,7 +40,7 @@
                                 <td class="px-6 py-4">{{ $product->name }}</td>
                                 <td class="px-6 py-4">{{ $product->category->name }}</td>
                                 <td class="px-6 py-4">{{ $product->base_price }}</td>
-                                <td class="px-6 py-4">
+                                <td class="px-6 py-4 space-x-1">
                                     @foreach ($product->sizes as $size)
                                         <span class="text-xs bg-gray-200 px-2 py-1 rounded">
                                             {{ $size->name }} (${{ $size->pivot->price }})
